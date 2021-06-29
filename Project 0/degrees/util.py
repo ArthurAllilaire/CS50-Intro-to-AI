@@ -4,6 +4,9 @@ class Node():
         self.parent = parent
         self.action = action
 
+    def __str__(self):
+        return f"{self.state} is connected to {self.parent} through {self.action}"
+
 
 class StackFrontier():
     def __init__(self):
