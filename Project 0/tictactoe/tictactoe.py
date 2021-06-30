@@ -131,7 +131,6 @@ def terminal(board):
     """
     # If there is a winner return True
     if winner(board):
-        print("Winner:", winner(board))
         return True
     # If there are still empty spaces return False, can still add
     for row in board:
@@ -162,7 +161,6 @@ def minimax(board):
     """
     # If game ended return None
     if terminal(board):
-        print("Game ended")
         return None
 
     def recursive_minimax(board):
@@ -178,8 +176,6 @@ def minimax(board):
             return (None, utility(board))
         # Get all the possible actions, uses depth first search
         for action in actions(board):
-            # print("action", action)
-            # print("Result: ", result(board, action))
             path = recursive_minimax(
                 result(board, action)
             )
@@ -196,7 +192,3 @@ def minimax(board):
     return recursive_minimax(board)[0]
 
 
-if __name__ == '__main__':
-    initial = initial_state()
-
-    print(minimax(initial))
