@@ -267,11 +267,11 @@ class MinesweeperAI():
             if sentence.cells == set() or safes or mines:
                 to_delete.append(i)
 
-        # Delete all cells that are empty, done once finished looping over self.knowledge
+        # Delete all cells that are empty and that aren't duplicates, done once finished looping over self.knowledge
         new_knowledge = []
         for i in range(len(self.knowledge)):
-            # If the cell is not to_delete
-            if i not in to_delete:
+            # If the cell is not to_delete and
+            if i not in to_delete and self.knowledge[i] not in new_knowledge:
                 new_knowledge.append(self.knowledge[i])
 
         self.knowledge = new_knowledge
@@ -291,10 +291,15 @@ class MinesweeperAI():
                         other_sentence.cells)
                     # Create new sentence with difference in counts
                     count_dif = sentence.count - other_sentence.count
-                    # Add it to knowledge
-                    self.knowledge.append(
-                        Sentence(new_cells, count_dif)
-                    )
+                    if count_dif < 0:
+                        print("NEGATIVE", count_dif)
+                        print(sentence)
+                        print(other_sentence)
+                    else:
+                        # Add it to knowledge
+                        self.knowledge.append(
+                            Sentence(new_cells, count_dif)
+                        )
         print(len(self.knowledge))
 
     def add_knowledge(self, cell, count):
@@ -321,14 +326,14 @@ class MinesweeperAI():
         near_cells = self.nearby_cells(cell)
         sentence_cells = set()
         for cell in near_cells:
-            # If the state of the cell if unkown add to sentence
-            if cell not in self.mines and cell not in self.safes:
+            # If the state of the cell is unkown add to sentence
+            # Used to remove cells that were in self.mines but this made count wrong as count included it regardless of whether it was in self.mines
+            if cell not in self.safes:
                 sentence_cells.add(cell)
 
-        # Create new sentence based on cells and count and add to knowledge
-        # Sentence after each turn is being duplicated 3 times
+        # Create new sentence based on cells and count and add to knowledge if not already there (may have been inferred already) and Sentence is not an empty set.
         newSentence = Sentence(sentence_cells, count)
-        if newSentence not in self.knowledge:
+        if newSentence not in self.knowledge and len(newSentence.cells) > 0:
             self.knowledge.append(newSentence)
 
         # 4) mark any additional cells as safe or as mines
@@ -340,6 +345,10 @@ class MinesweeperAI():
         self.check_inferences()
         # Check knowledge again
         self.check_knowledge()
+        print("Cell: ", cell)
+        print("Moves made:", self.moves_made)
+        print("Mines:", self.mines)
+        print("Safes:", self.safes)
 
     def make_safe_move(self):
         """
