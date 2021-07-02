@@ -96,7 +96,37 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    # Initiate a dictionary that is filled with every page, with the value of each key = 0, counter for num times page visited.
+    result = {}
+    pages = list(corpus.keys())
+    for page in pages:
+        result[page] = 0
+
+    # take the first page at random
+    page = random.choice(pages)
+    # Go through all the iterations
+    for iter in range(n):
+        # For the first iteration just take the random page
+        if iter != 1:
+            # Else get the page based on the transition model probability
+            model = transition_model(corpus, page, damping_factor)
+            rand_dec = random.random()
+            total_prob = 0
+            for page_itr in pages:
+                # Add to the total_prob the probability of this page
+                total_prob += model[page_itr]
+                # Less than as float can never be 1 so to get 5% for 0.05 need less than as can be 0 randomly select based on probability the page
+                if rand_dec < total_prob:
+                    page = page_itr
+                    break
+
+        # Record that the current page was visited
+        result[page] += 1
+
+    # Divide by number of trials to make sum == 1
+    for page in result:
+        result[page] = round(result[page] / n, 8)
+    return result
 
 
 def iterate_pagerank(corpus, damping_factor):
