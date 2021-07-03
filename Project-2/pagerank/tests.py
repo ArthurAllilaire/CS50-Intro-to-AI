@@ -67,10 +67,42 @@ class SamplePagerankTestCase(unittest.TestCase):
 
 class IteratePagerankTestCase(unittest.TestCase):
     def setUp(self):
-        pass
+        # So all test outputs are the same use same random numbers
+        random.seed(0)
+        self.corpus = {
+            "1.html": {"2.html", "3.html"},
+            "2.html": {"3.html"},
+            "3.html": {"2.html"}
+        }
+        self.pagerank = iterate_pagerank(self.corpus, DAMPING)
 
-    def test(self):
-        pass
+    def test_pagerank(self):
+        # print("final pagerank", self.pagerank)
+        self.assertEqual({'1.html': 0.05, '2.html': 0.475,
+                         '3.html': 0.475}, self.pagerank)
+
+    def test_pagerank_sums_to_one(self):
+        self.assertTrue(sum(self.pagerank.values()) == 1)
+
+
+@unittest.skip("Skipped optional test for a function that returns all pages that have a link to a current page, can modify if have similar function")
+class GetPagesThatLinkTestCase(unittest.TestCase):
+    def setUp(self):
+        self.corpus = {
+            "1.html": {"2.html", "3.html"},
+            "2.html": {"3.html"},
+            "3.html": {"2.html"}
+        }
+
+    def test_get_pages_that_link_with_no_links(self):
+        links = get_pages_that_link(self.corpus, "1.html")
+        # print("1.html links:", links)
+        self.assertEqual(set(), links)
+
+    def test_get_pages_that_link_with_links(self):
+        links = get_pages_that_link(self.corpus, "2.html")
+        self.assertEqual({('3.html', 1), ('1.html', 2)}, links)
+        # print("2.html links:", links)
 
 
 if __name__ == '__main__':

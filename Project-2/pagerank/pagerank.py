@@ -129,6 +129,56 @@ def sample_pagerank(corpus, damping_factor, n):
     return result
 
 
+def get_pages_that_link(corpus, current_page):
+    """
+    Returns a set of tuples of all the pages that link to the current_page. Each tuple is: (page_name, num_links_on_the_page)
+    If page has no links then returns a set as if it had a link to every page including itself.
+    """
+    links = set()
+    pages = list(corpus.keys())
+    # Go over every page and add it to the set of tuples if it links to the current page
+    for page in pages:
+        if current_page in corpus[page]:
+            # Add the page that links to it and the num_links of the page
+            links.add((page, len(corpus[page])))
+
+    """ # If the number of links is zero
+    if len(links) == 0:
+        # Then change it to as if it had a link to every page
+        for page in pages:
+            # Add the page that links to it and the num_links of the page
+            links.add((page, len(corpus[page]))) """
+
+    return links
+
+
+def pagerank_calc(corpus, old_pagerank, damping_factor):
+    """ Calculates new pagerank based on corpus and old pagerank, returns the new pagerank """
+    new_pagerank = {}
+    pages = list(corpus.keys())
+    pagerank_base_prob = (1-damping_factor)/len(pages)
+
+    for page in pages:
+        # Set of tuples of all the links that link to the current page
+        # (page_name, num_links_on_the_page)
+        links = get_pages_that_link(corpus, page)
+
+        # Sum of the PR of all the links to that page
+        pr_links = 0
+        for link in links:
+            # Sum of page rank / numlinks(i)
+            pr_links += old_pagerank[link[0]] / link[1]
+
+        # print(f"pr for {page} is: {pr_links}")
+        # Divide by num_links * damping factor probability
+        pr_for_page = damping_factor * pr_links
+
+        # Add that to the new pagerank
+        new_pagerank[page] = round(pagerank_base_prob + pr_for_page, 8)
+
+    return new_pagerank
+
+
 def iterate_pagerank(corpus, damping_factor):
     """
     Return PageRank values for each page by iteratively updating
@@ -138,7 +188,34 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    start_pagerank = {}
+    pages = corpus.keys()
+    # Set the beginning page probability to 1/Num pages
+    for page in pages:
+        start_pagerank[page] = 1/len(pages)
+
+    while True:
+        # Calculate the pagerank
+        old_pagerank = pagerank_calc(corpus, start_pagerank, damping_factor)
+        old_values = list(old_pagerank.values())
+
+        start_pagerank = pagerank_calc(corpus, old_pagerank, damping_factor)
+        start_values = list(start_pagerank.values())
+
+        close = True
+        # print(old_pagerank, start_pagerank)
+        for i in range(len(old_values)):
+            old_val = old_values[i]
+            new_val = start_values[i]
+            # If they are too far apart
+            if abs(old_val-new_val) > 0.001:
+                close = False
+                # Only need one value to be too far apart
+                break
+
+        # If all values where close enough
+        if close:
+            return start_pagerank
 
 
 if __name__ == "__main__":
