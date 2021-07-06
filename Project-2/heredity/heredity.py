@@ -180,7 +180,9 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         # num_genes = to_calc[person][0]
         prob_gene = prob_has_gene(people, person, to_calc)
         # Calculate chance of having trait, given that she has or doesn't have the gene
-        prob_trait = prob_has_trait()
+        # Use PROBS dict, example query: PROBS["trait"][1][False]
+        prob_trait = PROBS["trait"][to_calc[person]
+                                    [0]][bool(to_calc[person][1])]
         # Append the multiplication of both probabilties.
         probs.append(prob_gene * prob_trait)
 

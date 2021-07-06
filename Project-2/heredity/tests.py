@@ -32,7 +32,6 @@ class JointProbabilityTestClass(unittest.TestCase):
         prob = prob_has_gene(self.people, "Harry", self.genes_and_traits)
         self.assertEqual(prob, 0.9802)
 
-    @ unittest.skip("Not yet implemented")
     def test_joint_probability(self):
         joint_prob = joint_probability(
             self.people, {"Harry"}, {"James"}, {"James"})
