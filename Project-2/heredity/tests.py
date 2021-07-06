@@ -10,31 +10,29 @@ class JointProbabilityTestClass(unittest.TestCase):
             'James': {'name': 'James', 'mother': None, 'father': None, 'trait': True},
             'Lily': {'name': 'Lily', 'mother': None, 'father': None, 'trait': False}
         }
-
-    def test_dict_of_gene_and_trait(self):
-        result = dict_of_gene_and_trait(
+        self.genes_and_traits = dict_of_gene_and_trait(
             set(self.people.keys()), {"Harry"}, {"James"}, {"James"})
 
+    def test_dict_of_gene_and_trait(self):
         self.assertEqual(
-            {'Harry': (1, 0), 'James': (2, 1), 'Lily': (0, 0)}, result)
-        print(result)
+            {'Harry': (1, 0), 'James': (2, 1), 'Lily': (0, 0)}, self.genes_and_traits)
+        # print(result)
 
     def test_prob_has_gene_no_parents(self):
         # For 0 genes
-        prob = prob_has_gene(self.people, "Lily", 0)
+        prob = prob_has_gene(self.people, "Lily", self.genes_and_traits)
         self.assertEqual(prob, 0.96)
 
         # For 2 genes
-        prob = prob_has_gene(self.people, "James", 2)
+        prob = prob_has_gene(self.people, "James", self.genes_and_traits)
         self.assertEqual(prob, 0.01)
 
-    @unittest.skip("Not yet implemented")
     def test_prob_has_gene(self):
         # Test harry for genes
-        prob = prob_has_gene(self.people, "Lily", 0)
-        self.assertEqual(prob, 0.96)
+        prob = prob_has_gene(self.people, "Harry", self.genes_and_traits)
+        self.assertEqual(prob, 0.9802)
 
-    @unittest.skip("Not yet implemented")
+    @ unittest.skip("Not yet implemented")
     def test_joint_probability(self):
         joint_prob = joint_probability(
             self.people, {"Harry"}, {"James"}, {"James"})

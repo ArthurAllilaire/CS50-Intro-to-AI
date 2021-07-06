@@ -177,8 +177,8 @@ def joint_probability(people, one_gene, two_genes, have_trait):
 
     for person in people:
         # Calculate chance of having or not having gene
-        num_genes = to_calc[person][0]
-        prob_gene = prob_has_gene(people, person, num_genes)
+        # num_genes = to_calc[person][0]
+        prob_gene = prob_has_gene(people, person, to_calc)
         # Calculate chance of having trait, given that she has or doesn't have the gene
         prob_trait = prob_has_trait()
         # Append the multiplication of both probabilties.
@@ -189,19 +189,54 @@ def joint_probability(people, one_gene, two_genes, have_trait):
     return math.prod(probs)
 
 
-def prob_has_gene(people, person, num_genes):
+def prob_has_gene(people, person, genes_and_traits):
     """
     Takes a person and the num of genes that is being predicted.
     Returns the probability the person has that gene
     """
     # Dictionary of values for current person (name, mother, father, trait)
     profile = people[person]
+    num_genes = genes_and_traits[person][0]
     # Check if person has no parents
     if profile["mother"] == None and profile["father"] == None:
         # If they don't Use probability constants in PROBS dict to get probability.
+
         return PROBS["gene"][num_genes]
 
-    # Get the
+    # Get the genes of parents
+    parents = (genes_and_traits[profile["mother"]]
+               [0], genes_and_traits[profile["father"]][0])
+
+    # Probability distributation defining probability a parent passes on 1 gene, [0] = 0 genes, [1] if parent has 1 gene. 1- prob dist is probability parent passes on no genes.
+    prob_dist_parents = [PROBS["mutation"], 0.5, 1-PROBS["mutation"]]
+
+    # Prob of mum who has parents[0] genes passing on 1 gene
+    prob_mum_1 = prob_dist_parents[parents[0]]
+    # and prob of dad who has parent[1] genes passin on 0 genes
+    prob_dad_1 = prob_dist_parents[parents[1]]
+
+    prob_dist_child = [
+        # The probability of getting 0 genes is equal to
+        # Prob of mum passing on 0 genes
+        # and prob of dad passin on 0 genes
+        # Since it is AND multiply together.
+        (1-prob_mum_1) * (1-prob_dad_1),
+
+
+        # The probability of getting 1 gene is equal to 1- prob(0) + 1-prob(2)
+        # Placeholder for now
+        0,
+
+        # The probability of getting 2 genes is equal to
+        # probability of dad and mum passing on 1 gene each
+        # Since it is AND multiply together.
+        prob_dad_1 * prob_mum_1
+    ]
+    # Add probability of 1
+    # The probability of getting 1 gene is equal to 1- prob(0) + 1-prob(2)
+    prob_dist_child[1] = 1 - sum(prob_dist_child)
+
+    return prob_dist_child[num_genes]
 
 
 def prob_has_trait(people, ):
