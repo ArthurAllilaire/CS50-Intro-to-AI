@@ -241,10 +241,6 @@ def prob_has_gene(people, person, genes_and_traits):
     return prob_dist_child[num_genes]
 
 
-def prob_has_trait(people, ):
-    pass
-
-
 def update(probabilities, one_gene, two_genes, have_trait, p):
     """
     Add to `probabilities` a new joint probability `p`.
@@ -252,7 +248,19 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
+    people = set(probabilities.keys())
+    people_dict = dict_of_gene_and_trait(people,
+                                         one_gene, two_genes, have_trait)
+
+    for person in people:
+        # Get the tuple for that person from the people_dict
+        person_info = people_dict[person]
+
+        # Update the gene
+        probabilities[person]["gene"][person_info[0]] = p
+
+        # Update the trait
+        probabilities[person]["trait"][person_info[1]] = p
 
 
 def normalize(probabilities):

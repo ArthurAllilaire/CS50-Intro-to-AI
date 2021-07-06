@@ -38,5 +38,45 @@ class JointProbabilityTestClass(unittest.TestCase):
         self.assertTrue(math.isclose(joint_prob, 0.0026643247488))
 
 
+class UpdateTestClass(unittest.TestCase):
+    def setUp(self):
+        self.people = {
+            'Harry': {'name': 'Harry', 'mother': 'Lily', 'father': 'James', 'trait': None},
+            'James': {'name': 'James', 'mother': None, 'father': None, 'trait': True},
+            'Lily': {'name': 'Lily', 'mother': None, 'father': None, 'trait': False}
+        }
+        self.genes_and_traits = dict_of_gene_and_trait(
+            set(self.people.keys()), {"Harry"}, {"James"}, {"James"})
+        self.probabilities = {
+            'Harry': {
+                'gene': {2: 0, 1: 0, 0: 0},
+                'trait': {True: 0, False: 0}},
+            'James': {
+                'gene': {2: 0, 1: 0, 0: 0},
+                'trait': {True: 0, False: 0}},
+            'Lily': {
+                'gene': {2: 0, 1: 0, 0: 0},
+                'trait': {True: 0, False: 0}}
+        }
+
+    def test_update_func(self):
+        # get the joint probability
+        joint_prob = joint_probability(
+            self.people, {"Harry"}, {"James"}, {"James"})
+
+        # Pass to update to update the probabilities dict
+        update(self.probabilities, {"Harry"}, {
+               "James"}, {"James"}, joint_prob)
+
+        # check the dict has been updated
+        self.assertEqual(
+            self.probabilities,
+            {
+                'Harry': {'gene': {2: 0, 1: 0.0026643247488, 0: 0}, 'trait': {True: 0, False: 0.0026643247488}},
+                'James': {'gene': {2: 0.0026643247488, 1: 0, 0: 0}, 'trait': {True: 0.0026643247488, False: 0}},
+                'Lily': {'gene': {2: 0, 1: 0, 0: 0.0026643247488}, 'trait': {True: 0, False: 0.0026643247488}}}
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
