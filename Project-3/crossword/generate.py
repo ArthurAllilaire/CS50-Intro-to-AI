@@ -129,10 +129,14 @@ class CrosswordCreator():
             y_sliced_domain.add(word[overlap[1]])
 
         x_domain = self.domains[x].copy()
+        changed = False
         for word in x_domain:
             # If the word's letter doesn't have a constistent one in y's domain then delete it.
             if word[overlap[0]] not in y_sliced_domain:
                 self.domains[x].remove(word)
+                changed = True
+
+        return changed
 
     def ac3(self, arcs=None):
         """

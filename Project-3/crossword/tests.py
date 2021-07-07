@@ -29,14 +29,27 @@ class GenerateTestClass(unittest.TestCase):
 
     def test_revise(self):
         """Test to see if arc consistency is enforced"""
-
+        # Go through all possible variable combinations
         for var in self.crossword.variables:
             for other_var in self.crossword.variables:
+              # Don't test it on the same var
                 if var != other_var:
+                    begining_domain = self.creator.domains[var].copy()
                     return_val = self.creator.revise(var, other_var)
+                    var_domain = self.creator.domains[var]
+                    # If the begining domain is different to the end domain
+                    if begining_domain != var_domain:
+                        # return val should be true
+                        self.assertTrue(
+                            return_val, msg="Changes were made to domain but revise returned False"
+                        )
+                    # Else False
+                    else:
+                        self.assertFalse(
+                            return_val, msg="No changes were made to domain but revise returned True"
+                        )
                     overlap = self.crossword.overlaps[var, other_var]
                     if overlap:
-                        var_domain = self.creator.domains[var]
                         other_var_domain = self.creator.domains[other_var]
                         # Slice string to get the right overlap
                         sliced_var_domain = set()
@@ -51,10 +64,6 @@ class GenerateTestClass(unittest.TestCase):
                         for letter in sliced_var_domain:
                             self.assertTrue(
                                 letter in other_sliced_var_domain, f"The domains are not arc consistent, {var_domain} {other_var_domain}")
-
-                    else:
-                        # If there are no overlaps no changes to the variables should have been made
-                        self.assertFalse(return_val)
 
 
 if __name__ == '__main__':
