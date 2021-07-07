@@ -146,8 +146,55 @@ class CrosswordCreator():
 
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
+
+        An arc is
+        queue = all arcs in csp
+        while queue non-empty:
+        (X, Y) = Dequeue(queue)
+        if Revise(csp, X, Y):
+        if size of X.domain == 0:
+        return false
+        for each Z in X.neighbors - {Y}:
+        Enqueue(queue, (Z,X))
+        return true
         """
-        raise NotImplementedError
+        if arcs == None:
+            # Make queue equal to all the arcs available
+            queue = []
+            searched_var = []
+            for var in self.crossword.variables:
+                # Get the neighbours
+                close = self.crossword.neighbors(var)
+                for neighbor in close:
+                    # If not already gone through neighbor's neighbor's then - avoid double counting and getting them both ways
+                    if neighbor not in searched_var:
+                        # Add them to the queue
+                        queue.append((var, neighbor))
+                # Add the var as explored
+                searched_var.append(var)
+        else:
+            queue = list(arcs)
+
+        while queue:
+            # Get the first arc from the queue
+            # Split it into the two connected variables
+            x, y = queue.pop(0)
+
+            # Make the arc consistent
+            if self.revise(x, y):
+                # Check to make sure there are still possible solutions
+                # If the domain is empty
+                if not self.domains[x]:
+                    # The problem is unsolvable
+                    return False
+
+                # Since X's domain has changed need to check all neighbouring domains to ensure arc consistency, bar y
+                for neighbor in self.crossword.neighbors(x) - {y}:
+                    # Add the arc to be checked for consistency
+                    queue.append((neighbor, x))
+
+        # Once all the arcs are consistent return True
+        return True
 
     def assignment_complete(self, assignment):
         """
