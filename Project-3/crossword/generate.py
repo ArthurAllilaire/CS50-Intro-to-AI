@@ -99,7 +99,15 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        raise NotImplementedError
+        # For every varaibles domain
+        for var in self.domains:
+            # Go through every word in the domain
+            set_for_itr = self.domains[var].copy()
+            for word in set_for_itr:
+                # If it is not equal to the length of the variable
+                if len(word) != var.length:
+                    # remove it
+                    self.domains[var].remove(word)
 
     def revise(self, x, y):
         """
@@ -174,6 +182,7 @@ def main():
     if len(sys.argv) not in [3, 4]:
         sys.exit("Usage: python generate.py structure words [output]")
 
+    print(sys.argv)
     # Parse command-line arguments
     structure = sys.argv[1]
     words = sys.argv[2]
