@@ -183,6 +183,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         # Use PROBS dict, example query: PROBS["trait"][1][False]
         prob_trait = PROBS["trait"][to_calc[person]
                                     [0]][bool(to_calc[person][1])]
+
         # Append the multiplication of both probabilties.
         probs.append(prob_gene * prob_trait)
 
@@ -225,18 +226,19 @@ def prob_has_gene(people, person, genes_and_traits):
         (1-prob_mum_1) * (1-prob_dad_1),
 
 
-        # The probability of getting 1 gene is equal to 1- prob(0) + 1-prob(2)
+        # The probability of getting 1 gene is equal to 1- (prob(0) + prob(2))
         # Placeholder for now
-        0,
+        prob_dad_1 * (1-prob_mum_1) + (prob_mum_1 * (1-prob_dad_1)),
 
         # The probability of getting 2 genes is equal to
         # probability of dad and mum passing on 1 gene each
         # Since it is AND multiply together.
         prob_dad_1 * prob_mum_1
     ]
-    # Add probability of 1
+
     # The probability of getting 1 gene is equal to 1- prob(0) + 1-prob(2)
-    prob_dist_child[1] = 1 - sum(prob_dist_child)
+    # 1 - sum(prob_dist_child)
+    # Trait is wrong too
 
     return prob_dist_child[num_genes]
 
@@ -257,10 +259,10 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
         person_info = people_dict[person]
 
         # Update the gene
-        probabilities[person]["gene"][person_info[0]] = p
+        probabilities[person]["gene"][person_info[0]] += p
 
         # Update the trait
-        probabilities[person]["trait"][person_info[1]] = p
+        probabilities[person]["trait"][person_info[1]] += p
 
 
 def normalize(probabilities):
@@ -268,7 +270,24 @@ def normalize(probabilities):
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
-    raise NotImplementedError
+    for person in probabilities:
+        person = probabilities[person]
+
+        # Normalise the property dict, both trait and gene
+        for property in ["gene", "trait"]:
+            try:
+                # Get sum of values
+                coefficient = 1 / sum(person[property].values())
+            except ZeroDivisionError:
+                # If all zero then should all equal to 1/len(values)
+                prob = 1 / len(person[property].values())
+                for value in person[property]:
+                    person[property][value] = prob
+
+            else:
+                # Times each value by the coefficient
+                for value in person[property]:
+                    person[property][value] *= coefficient
 
 
 if __name__ == "__main__":

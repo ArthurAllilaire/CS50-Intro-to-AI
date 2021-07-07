@@ -38,7 +38,7 @@ class JointProbabilityTestClass(unittest.TestCase):
         self.assertTrue(math.isclose(joint_prob, 0.0026643247488))
 
 
-class UpdateTestClass(unittest.TestCase):
+class UpdateAndNormaliseTestClass(unittest.TestCase):
     def setUp(self):
         self.people = {
             'Harry': {'name': 'Harry', 'mother': 'Lily', 'father': 'James', 'trait': None},
@@ -75,6 +75,36 @@ class UpdateTestClass(unittest.TestCase):
                 'Harry': {'gene': {2: 0, 1: 0.0026643247488, 0: 0}, 'trait': {True: 0, False: 0.0026643247488}},
                 'James': {'gene': {2: 0.0026643247488, 1: 0, 0: 0}, 'trait': {True: 0.0026643247488, False: 0}},
                 'Lily': {'gene': {2: 0, 1: 0, 0: 0.0026643247488}, 'trait': {True: 0, False: 0.0026643247488}}}
+        )
+
+        update(self.probabilities, {"Harry"}, {
+               "James"}, {"James"}, joint_prob)
+
+        # If this fails but the one before didn't then your update is not adding p instead it is replacing p every time
+        self.assertEqual(self.probabilities, {
+            'Harry': {'gene': {2: 0, 1: 0.0053286494976, 0: 0}, 'trait': {True: 0, False: 0.0053286494976}},
+            'James': {'gene': {2: 0.0053286494976, 1: 0, 0: 0}, 'trait': {True: 0.0053286494976, False: 0}},
+            'Lily': {'gene': {2: 0, 1: 0, 0: 0.0053286494976}, 'trait': {True: 0, False: 0.0053286494976}}}
+        )
+
+
+class NormalizeTestClass(unittest.TestCase):
+    def setUp(self):
+        self.probabilities = {
+            'Harry': {'gene': {2: 0, 1: 0.0026643247488, 0: 0}, 'trait': {True: 0, False: 0.0026643247488}},
+            'James': {'gene': {2: 0.0026643247488, 1: 0, 0: 0}, 'trait': {True: 0.0026643247488, False: 0}},
+            'Lily': {'gene': {2: 0, 1: 0, 0: 0.0026643247488}, 'trait': {True: 0, False: 0.0026643247488}}
+        }
+
+    def test_normalize_func(self):
+        # normalize the given probabilities.
+        normalize(self.probabilities)
+        self.assertEqual(
+            self.probabilities,
+            {'Harry': {'gene': {2: 0.0, 1: 1.0, 0: 0.0}, 'trait': {True: 0.0, False: 1.0}},
+             'James': {'gene': {2: 1.0, 1: 0.0, 0: 0.0}, 'trait': {True: 1.0, False: 0.0}},
+             'Lily': {'gene': {2: 0.0, 1: 0.0, 0: 1.0}, 'trait': {True: 0.0, False: 1.0}}}
+
         )
 
 
