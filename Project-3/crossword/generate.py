@@ -118,7 +118,21 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
+        overlap = self.crossword.overlaps[x, y]
+        # If no overlaps return False
+        if not overlap:
+            return False
+
+        # Slice y domain to get the overlapping letters
+        y_sliced_domain = set()
+        for word in self.domains[y]:
+            y_sliced_domain.add(word[overlap[1]])
+
+        x_domain = self.domains[x].copy()
+        for word in x_domain:
+            # If the word's letter doesn't have a constistent one in y's domain then delete it.
+            if word[overlap[0]] not in y_sliced_domain:
+                self.domains[x].remove(word)
 
     def ac3(self, arcs=None):
         """
