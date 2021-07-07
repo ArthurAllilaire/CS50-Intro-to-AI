@@ -65,6 +65,45 @@ class GenerateTestClass(unittest.TestCase):
                             self.assertTrue(
                                 letter in other_sliced_var_domain, f"The domains are not arc consistent, {var_domain} {other_var_domain}")
 
+    def test_ac3_with_arcs(self):
+        pass
+
+    def test_ac3_without_arcs(self):
+        """
+
+        """
+        self.creator.ac3()
+        print(self.creator.domains)
+        print(self.crossword.overlaps)
+        result = {Variable(2, 1, 'down', 5): {'INFER'},
+                  Variable(4, 4, 'across', 5): {'TRUTH', 'LOGIC', 'DEPTH'},
+                  Variable(2, 1, 'across', 12): {'INTELLIGENCE'}, Variable(6, 5, 'across', 6): {'SEARCH', 'REASON', 'MARKOV'},
+                  Variable(1, 12, 'down', 7): {'RESOLVE', 'NETWORK'},
+                  Variable(1, 7, 'down', 7): {'MINIMAX', 'INITIAL', 'RESOLVE', 'NETWORK', 'BREADTH'}}
+        # Order of the variables doesn't matter
+        for var in self.creator.domains:
+            self.assertEqual(
+                self.creator.domains[var],
+                result[var],
+                msg=f"The domains are not right, actual domain: {self.creator.domains[var]}, correct domain: {result[var]}"
+            )
+
+    def test_assignment_complete(self):
+        assignment = {}
+        for var in self.crossword.variables:
+            assignment[var] = "Word"
+
+        self.assertTrue(self.creator.assignment_complete(
+            assignment
+        ))
+
+        # Get rid of a word
+        assignment[self.crossword.variables.pop()] = ""
+
+        self.assertFalse(
+            self.creator.assignment_complete(assignment)
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
