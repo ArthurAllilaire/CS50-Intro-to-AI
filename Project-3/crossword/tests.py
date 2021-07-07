@@ -68,6 +68,7 @@ class GenerateTestClass(unittest.TestCase):
     def test_ac3_with_arcs(self):
         pass
 
+    @unittest.skip("Not yet implemented")
     def test_ac3_without_arcs(self):
         """
 
@@ -102,6 +103,44 @@ class GenerateTestClass(unittest.TestCase):
 
         self.assertFalse(
             self.creator.assignment_complete(assignment)
+        )
+
+    def test_consistent(self):
+        var_list = [Variable(1, 7, 'down', 7), Variable(1, 12, 'down', 7), Variable(4, 4, 'across', 5), Variable(
+            2, 1, 'down', 5), Variable(6, 5, 'across', 6), Variable(2, 1, 'across', 12)]
+        assignment = {}
+        word_list = ["MINIMAX", "RESOLVE", "LOGIC",
+                     "INFER", "SEARCH", "INTELLIGENCE"]
+
+        for i in range(len(var_list)):
+            assignment[var_list[i]] = word_list[i]
+
+        self.assertTrue(
+            self.creator.consistent(assignment), msg="Should return True as list of words is valid"
+        )
+
+        # Set a duplicate word
+        assignment[var_list[0]] = word_list[1]
+
+        # Should return False
+        self.assertFalse(
+            self.creator.consistent(assignment), msg="Should return False as list of words contains a duplicate"
+        )
+
+        # Set a word to empty
+        assignment[var_list[0]] = ""
+
+        # Should return False
+        self.assertFalse(
+            self.creator.consistent(assignment), msg="Should return False as list of words contains an empty string"
+        )
+
+        # Set a conflict on overlaps, A should be an I
+        assignment[var_list[0]] = "MANIMAX"
+
+        # Should return False
+        self.assertFalse(
+            self.creator.consistent(assignment), msg="Should return False as there is a conflict on the overlaps"
         )
 
 
