@@ -201,7 +201,12 @@ class CrosswordCreator():
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
-        for var in assignment:
+        # If assignment is not the right length
+        vars = self.crossword.variables
+        if len(assignment) != len(vars):
+            return False
+
+        for var in vars:
             if not assignment[var]:
                 return False
         return True
@@ -333,7 +338,13 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        # if assignment is complete
+        if self.assignment_complete(assignment):
+            return assignment
+        var = self.select_unassigned_variable(assignment)
+
+        for value in self.domains[var]:
+            pass
 
 
 def main():

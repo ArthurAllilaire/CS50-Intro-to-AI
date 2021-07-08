@@ -99,8 +99,17 @@ class GenerateTestClass(unittest.TestCase):
         ))
 
         # Get rid of a word
-        assignment[self.crossword.variables.pop()] = ""
+        var_gone = self.crossword.variables.pop()
+        # Add it back to the variables
+        self.crossword.variables.add(var_gone)
+        assignment[var_gone] = ""
 
+        self.assertFalse(
+            self.creator.assignment_complete(assignment)
+        )
+
+        # Remove var completely
+        del assignment[var_gone]
         self.assertFalse(
             self.creator.assignment_complete(assignment)
         )
