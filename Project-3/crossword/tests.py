@@ -143,6 +143,36 @@ class GenerateTestClass(unittest.TestCase):
             self.creator.consistent(assignment), msg="Should return False as there is a conflict on the overlaps"
         )
 
+    def test_order_domain_values(self):
+        # Ensure node consistency
+        self.creator.enforce_node_consistency()
+
+        vars = list(self.crossword.variables)
+        assignment = {}
+        result = self.creator.order_domain_values(
+            Variable(1, 7, 'down', 7), assignment)
+
+        # Check it returns all the values in domain
+        self.assertEqual(
+            len(self.creator.domains[Variable(1, 7, 'down', 7)]),
+            len(result)
+        )
+
+        # Check the first two values
+        for i in range(len(result)):
+            if i in [0, 1]:
+                self.assertTrue(
+                    result[i] in ['INITIAL', 'MINIMAX']
+                )
+            elif i == 2:
+                self.assertEqual(result[i], "NETWORK")
+            elif i in [3, 4]:
+                self.assertTrue(
+                    result[i] in ['RESOLVE', 'BREADTH']
+                )
+
+        print(result)
+
 
 if __name__ == '__main__':
     unittest.main()
