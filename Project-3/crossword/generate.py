@@ -278,8 +278,6 @@ class CrosswordCreator():
         # Sort the result based on the tally
         result = sorted(result, key=lambda tup: tup[1])
 
-        print(result)
-
         # Return only the variable not the tuple
         return [var[0] for var in result]
 
@@ -308,19 +306,23 @@ class CrosswordCreator():
             if var[1] == lowest:
                 lowest_results.append(var)
 
+        # Check to see for ties
         if len(lowest_results) == 1:
-            return lowest_results
+            # have to index into list then tuple to get only var
+            return lowest_results[0][0]
+
         # Sort results by number of neighbors, descending order
-        for i in range(lowest_results):
-            var = lowest_results[i]
+        for i in range(len(lowest_results)):
+            var = lowest_results[i][0]
+
             lowest_results[i] = (
                 var, len(self.crossword.neighbors(var))
             )
 
         lowest_results.sort(key=lambda tup: tup[1], reverse=True)
 
-        # Check to see for ties
-        return lowest_results[0]
+        # REturn only the var from the tuple, return the one with the highest num neighbours
+        return lowest_results[0][0]
 
     def backtrack(self, assignment):
         """
