@@ -291,7 +291,36 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        result = []
+        for var in self.crossword.variables:
+            if var not in assignment:
+                result.append(
+                    (var, len(self.domains[var]))
+                )
+
+        # Sort results by fewest values in domain
+        result.sort(key=lambda tup: tup[1])
+
+        # Get all tied variables
+        lowest = result[0][1]
+        lowest_results = []
+        for var in result:
+            if var[1] == lowest:
+                lowest_results.append(var)
+
+        if len(lowest_results) == 1:
+            return lowest_results
+        # Sort results by number of neighbors, descending order
+        for i in range(lowest_results):
+            var = lowest_results[i]
+            lowest_results[i] = (
+                var, len(self.crossword.neighbors(var))
+            )
+
+        lowest_results.sort(key=lambda tup: tup[1], reverse=True)
+
+        # Check to see for ties
+        return lowest_results[0]
 
     def backtrack(self, assignment):
         """
