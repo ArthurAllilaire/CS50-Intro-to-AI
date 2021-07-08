@@ -171,7 +171,23 @@ class GenerateTestClass(unittest.TestCase):
                     result[i] in ['RESOLVE', 'BREADTH']
                 )
 
-        print(result)
+    def test_select_unassigned_var(self):
+        var = self.creator.select_unassigned_variable({})
+
+        # Check returns right value when only no ties on remaining vals
+        self.assertEqual(
+            var,
+            Variable(2, 1, 'across', 12)
+        )
+
+        # Check no longer returns that value when it is added to assignment
+        var = self.creator.select_unassigned_variable(
+            {Variable(2, 1, "across", 12): "Example"})
+
+        # Instead should return the domain with highest num neighbors from 2nd lowest domains lengths
+        self.assertEqual(
+            var, Variable(1, 7, 'down', 7)
+        )
 
 
 if __name__ == '__main__':
