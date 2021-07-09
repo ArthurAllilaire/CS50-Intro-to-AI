@@ -152,6 +152,13 @@ class GenerateTestClass(unittest.TestCase):
             self.creator.consistent(assignment), msg="Should return False as there is a conflict on the overlaps"
         )
 
+        # Delete a variable
+        del assignment[var_list[0]]
+
+        self.assertTrue(
+            self.creator.consistent(assignment), msg="Should return True as assignment is consistent, it isn't complete though"
+        )
+
     def test_order_domain_values(self):
         # Ensure node consistency
         self.creator.enforce_node_consistency()
@@ -197,6 +204,27 @@ class GenerateTestClass(unittest.TestCase):
         self.assertEqual(
             var, Variable(1, 7, 'down', 7)
         )
+
+
+class BacktrackTestClass(unittest.TestCase):
+    def setUp(self):
+        structure = "data/structure1.txt"
+        words = "data/words1.txt"
+        # Generate crossword
+        self.crossword = Crossword(structure, words)
+        self.creator = CrosswordCreator(self.crossword)
+
+    def test_backtrack(self):
+        result = self.creator.solve()
+        print(result)
+        exemplar = {Variable(1, 7, 'down', 7): 'MINIMAX', Variable(2, 1, 'across', 12): 'INTELLIGENCE', Variable(2, 1, 'down', 5): 'INFER', Variable(
+            4, 4, 'across', 5): 'LOGIC', Variable(1, 12, 'down', 7): ['NETWORK', "RESOLVE"], Variable(6, 5, 'across', 6): ['SEARCH', 'REASON']}
+
+        for var in exemplar:
+            self.assertTrue(
+                result[var] == exemplar[var] or result[var] in exemplar[var],
+                msg=f"{result[var]} is not the same as {exemplar[var]}"
+            )
 
 
 if __name__ == '__main__':
