@@ -215,10 +215,9 @@ class CrosswordCreator():
         """
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
+
+        Assignment doesn't have to be complete.
         """
-        # If not all vars have values
-        if not self.assignment_complete(assignment):
-            return False
         for var in assignment:
             word = assignment[var]
             # If string not the right size return false
@@ -234,13 +233,15 @@ class CrosswordCreator():
             # If string conflicts with neighboring variables
                 # Go through every neighbour
             for neighbor in self.crossword.neighbors(var):
-                # Check for overlap
-                overlap = self.crossword.overlaps[var, neighbor]
-                # If they do overlap
-                if overlap:
-                    # Check that the overlapping letters aren't different
-                    if word[overlap[0]] != assignment[neighbor][overlap[1]]:
-                        return False
+                # The assignment might not have the neighbour yet
+                if neighbor in assignment:
+                    # Check for overlap
+                    overlap = self.crossword.overlaps[var, neighbor]
+                    # If they do overlap
+                    if overlap:
+                        # Check that the overlapping letters aren't different
+                        if word[overlap[0]] != assignment[neighbor][overlap[1]]:
+                            return False
 
         # If passed all the tests return True
         return True
@@ -343,8 +344,17 @@ class CrosswordCreator():
             return assignment
         var = self.select_unassigned_variable(assignment)
 
-        for value in self.domains[var]:
-            pass
+        for value in self.order_domain_values(var, assignment):
+            assignment[var] = value
+            if self.consistent(assignment):
+                result = self.backtrack(assignment)
+                if result:
+                    return result
+
+                del assignment[var]
+
+        # Gone through all possible values, none worked
+        return None
 
 
 def main():
@@ -353,7 +363,6 @@ def main():
     if len(sys.argv) not in [3, 4]:
         sys.exit("Usage: python generate.py structure words [output]")
 
-    print(sys.argv)
     # Parse command-line arguments
     structure = sys.argv[1]
     words = sys.argv[2]
