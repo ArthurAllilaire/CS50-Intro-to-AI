@@ -59,10 +59,50 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
+    evidence = []
+    labels = []
     with open(filename, newline="") as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            print(row)
+            # Miss out the headers
+            if row[0] != "Administrative":
+                #Row: ['0', '0', '0', '0', '5', '89.5', '0.04', '0.053333333', '0', '0', 'Dec', '1', '1', '3', '2', 'Returning_Visitor', 'TRUE', 'FALSE']
+                # Remove label from row and add to label list
+                labels.append(0 if row.pop() == 'FALSE' else 1)
+                for i in range(len(row)):
+                    # For the first ten rows
+                    if i < 10:
+                        # convert administrative, infromational and product related to ints
+                        if i in [0, 2, 4]:
+                            row[i] = int(row[i])
+                        else:
+                            # convert to float
+                            row[i] = float(row[i])
+
+                    # Month data column
+                    elif i == 10:
+                        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May',
+                                  'June', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        row[i] = int(months.index(row[i]))
+                    # For OS, browser, region and traffic type
+                    elif i <= 14:
+                        # Convert to int
+                        row[i] = int(row[i])
+                    # For visitor type
+                    elif i == 15:
+                        row[i] = 1 if row[i] == "Returning_Visitor" else 0
+
+                    # For weekend
+                    else:
+                        if row[i] == "TRUE":
+                            row[i] = 1
+                        else:
+                            row[i] = 0
+
+                # Add row to evidence
+                evidence.append(row)
+
+    return (evidence, labels)
 
 
 def train_model(evidence, labels):
