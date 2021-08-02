@@ -1,10 +1,12 @@
 import unittest
 from questions import *
+import re
 
 
-class LoadFilesTestClass(unittest.TestCase):
+class TestClass(unittest.TestCase):
     def setUp(self):
         self.data = load_files("corpus")
+        self.tokenize = tokenize(self.data["python.txt"])
         # print(self.data)
 
     def testLenData(self):
@@ -19,6 +21,17 @@ class LoadFilesTestClass(unittest.TestCase):
              'probability.txt'],
             list(self.data.keys())
         )
+
+    def testVal(self):
+        self.assertTrue(
+            isinstance(self.data["python.txt"], str)
+        )
+
+    def testTokenize(self):
+        for word in self.tokenize:
+            self.assertFalse(
+                re.search("[^\w]", word)
+            )
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 import nltk
 import sys
 import os
+import re
+import string
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -52,7 +54,7 @@ def load_files(directory):
     result = {}
     for filename in os.listdir(directory):
         with open(os.path.join(directory, filename)) as f:
-            result[filename] = f.readlines()
+            result[filename] = f.read()
 
     return result
 
@@ -65,7 +67,26 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    raise NotImplementedError
+    # Convert document to lower case then split into individual words
+    result = nltk.word_tokenize(document.lower())
+    # Remove any words that don't contain one alphabetic charachter
+    loop_over = result.copy()
+    for i in range(len(loop_over)):
+        word = loop_over[i]
+        if word in nltk.corpus.stopwords.words("english"):
+            result.remove(word)
+            # No need to remove punctuation
+            continue
+        # Remove anything that isn't white space or a letter or num
+        stripped_word = re.sub("[^\w\s]", "", word)
+        # If no match or if the word is a stop word
+        if stripped_word == "":
+            result.remove(word)
+        else:
+            # Replace the old word for the stripped word
+            result[result.index(word)] = stripped_word
+
+    return result
 
 
 def compute_idfs(documents):
