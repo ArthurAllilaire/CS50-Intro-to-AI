@@ -1,3 +1,4 @@
+import math
 import nltk
 import sys
 import os
@@ -96,8 +97,28 @@ def compute_idfs(documents):
 
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
+    An improvement to be made would be to sort words alphabetically this would make gets quicker (log(n) instead of n), which would make this  nlog(n) instead of n^2.
     """
-    raise NotImplementedError
+    result = {}
+    for filename in documents:
+        print(filename)
+        for word in documents[filename]:
+            if word == "on":
+                print("on found in", filename)
+            # Try and add the word to the dict
+            word_set = result.get(word, set())
+            # Using a set so you can add duplicate filenames (if the word appears multiple times in the same file and it won't be duplicated)
+            word_set.add(filename)
+            result[word] = word_set
+
+    # Now calculate the idfs - n time complexity
+    # print(result)
+    num_docs = len(documents)
+    for word in result:
+        # The word on generates a set with only 1 item
+        result[word] = math.log(num_docs/len(result[word]))
+
+    return result
 
 
 def top_files(query, files, idfs, n):

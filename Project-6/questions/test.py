@@ -4,9 +4,15 @@ import re
 
 
 class TestClass(unittest.TestCase):
-    def setUp(self):
+    # This way setup only run once
+    @classmethod
+    def setUpClass(self):
+        print("SET UP being run")
         self.data = load_files("corpus")
         self.tokenize = tokenize(self.data["python.txt"])
+        # Tokenize all the files
+        self.tokenized_data = {k: tokenize(v) for (k, v) in self.data.items()}
+        self.idfs = compute_idfs(self.tokenized_data)
         # print(self.data)
 
     def testLenData(self):
@@ -32,6 +38,10 @@ class TestClass(unittest.TestCase):
             self.assertFalse(
                 re.search("[^\w]", word)
             )
+
+    def testComputeIdfs(self):
+        # print(self.idfs)
+        pass
 
 
 if __name__ == '__main__':
