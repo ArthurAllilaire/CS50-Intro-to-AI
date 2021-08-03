@@ -129,18 +129,18 @@ def top_files(query, files, idfs, n):
     result = {k: 0 for k in files.keys()}
     # For each word calculate the tf-idf value for each file
     for word in query:
-        idf = idfs[word]
+        idf = idfs.get(word, 0)
         for filename in files:
             file = files[filename]
             tf = file.count(word)
             result[filename] += idf * tf
     # Convert the dict
     result = list(result.items())
-    # Sort the dictionary
-    result.sort(key=lambda tup: tup[1])
+    # Sort the results by tf-idf in descending order
+    result.sort(key=lambda tup: tup[1], reverse=True)
 
     # Return the top n items
-    return result[:n]
+    return [i[0] for i in result[:n]]
 
 
 def top_sentences(query, sentences, idfs, n):
