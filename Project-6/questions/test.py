@@ -56,6 +56,17 @@ class TestClass(unittest.TestCase):
 
         # print(self.top_files)
 
+    def testTopSentences(self):
+        pass
+
+    def testQueryDensity(self):
+        result = query_density(["hello", "world"], ["this", "hello", "zero"])
+        self.assertEqual(
+            0.3333333333333333,
+            result
+        )
+        print(result)
+
 
 if __name__ == '__main__':
     unittest.main()

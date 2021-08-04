@@ -151,7 +151,49 @@ def top_sentences(query, sentences, idfs, n):
     the query, ranked according to idf. If there are ties, preference should
     be given to sentences that have a higher query term density.
     """
-    raise NotImplementedError
+    # Tup of idf, q4uery density for every sentence
+    result = {}
+    # {k: (0,0) for k in sentences.keys()}
+    for key, sentence in sentences.items():
+        result[key] = (
+            calc_idf(query, sentence, idfs),
+            query_density(query, sentence)
+        )
+
+    # Convert the dict
+    result = list(result.items())
+    # Sort the results by the tuple values, idf in descending order
+    # Then sort ties by query density, also descending
+    result.sort(key=lambda tup: (tup[1][1], tup[1][0]), reverse=True)
+
+    # Return the top n items
+    return [i[0] for i in result[:n]]
+
+
+def query_density(query, sentence):
+    """
+    Returns the query density of the sentence
+    query density = num of words in sentence that are in query / len(sentence)
+    """
+    counter = 0
+    for word in sentence:
+        if word in query:
+            counter += 1
+
+    return counter / len(sentence)
+
+
+def calc_idf(query, sentence, idfs):
+    """
+    Calculates the IDF value of the sentence
+    """
+    result = 0
+    for word in query:
+        if word in sentence:
+            idf = idfs.get(word, 0)
+            result += idf
+
+    return result
 
 
 if __name__ == "__main__":
