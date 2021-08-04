@@ -65,7 +65,12 @@ class TestClass(unittest.TestCase):
             0.3333333333333333,
             result
         )
-        print(result)
+        # print(result)
+
+    def testCalcIDF(self):
+        query = self.query
+        sentence = []
+        result = calc_idf()
 
 
 if __name__ == '__main__':

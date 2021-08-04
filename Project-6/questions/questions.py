@@ -164,7 +164,7 @@ def top_sentences(query, sentences, idfs, n):
     result = list(result.items())
     # Sort the results by the tuple values, idf in descending order
     # Then sort ties by query density, also descending
-    result.sort(key=lambda tup: (tup[1][1], tup[1][0]), reverse=True)
+    result.sort(key=lambda tup: (tup[1][0], tup[1][1]), reverse=True)
 
     # Return the top n items
     return [i[0] for i in result[:n]]
