@@ -104,5 +104,22 @@ No tests, but assignment is not very long.
 #### Specification:
 Complete the implementation of load_data and get_model in traffic.py.
 Spec: https://cs50.harvard.edu/ai/2020/projects/5/traffic/#specification
-#### Time scale: Not completed yet
+#### Time scale: 4 hours - 2 days
 #### Comments: 
+Check out the readme.md file that explains my process for hyperparameter optimization.
+
+## Project 6a
+### Project 6a: Parser
+#### Specification:
+Complete the implementation of preprocess and np_chunk, and complete the context-free grammar rules defined in NONTERMINALS.
+Spec: https://cs50.harvard.edu/ai/2020/projects/6/parser/#specification
+#### Time scale: 4 hours - 1 days
+
+
+### Project 6b: Questions
+#### Specification:
+Complete the implementation of load_files, tokenize, compute_idfs, top_files, and top_sentences in questions.py.
+Spec: https://cs50.harvard.edu/ai/2020/projects/6/questions/#specification
+#### Time scale: 1 - 2 days
+#### Comments: 
+Small test suite that is not complete.
