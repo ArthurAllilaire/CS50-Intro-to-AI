@@ -108,7 +108,7 @@ Spec: https://cs50.harvard.edu/ai/2020/projects/5/traffic/#specification
 #### Comments: 
 Check out the readme.md file that explains my process for hyperparameter optimization.
 
-## Project 6a
+## Project 6
 ### Project 6a: Parser
 #### Specification:
 Complete the implementation of preprocess and np_chunk, and complete the context-free grammar rules defined in NONTERMINALS.
